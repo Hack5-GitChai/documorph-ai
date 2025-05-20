@@ -1,0 +1,31 @@
+ABSTRACT
+
+This document is designed to test DocuMorph AI's ability to format a long academic report with mathematical equations and structured sections.
+
+1. INTRODUCTION
+
+In physics and mathematics, precise formatting of equations improves clarity and readability.
+
+Equation: x2 + y2 = z2
+
+This is known as the Pythagorean theorem, widely used in geometry.
+
+2. CALCULUS BASICS
+
+Integral calculus deals with accumulation. A common example is:
+
+Equation: sqrt(x2 + y2)
+
+This can represent distance from the origin in 2D space.
+
+2.1 FRACTIONS AND RATIOS
+
+Many scientific formulas use ratios and fractional values.
+
+Equation: 1/2 + 3/4
+
+This test helps ensure fractions are rendered in clean LaTeX.
+
+3. CONCLUSION
+
+DocuMorph AI should now classify headings, apply formatting, insert math images with captions, and generate a polished document.
