@@ -31,3 +31,13 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"message": "DocuMorph AI backend is working!"}
+
+from fastapi.middleware.cors import CORSMiddleware
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # In production, replace "*" with your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)

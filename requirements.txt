@@ -1,5 +1,5 @@
 # Core Web Framework & Server
 fastapi
 uvicorn[standard]
-uvicorn
 python-multipart
+python-docx
