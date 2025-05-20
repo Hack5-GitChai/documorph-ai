@@ -1,44 +1,5 @@
 # Core Web Framework & Server
 fastapi
 uvicorn[standard]
-python-multipart # For file uploads
-
-# Document Processing
-python-docx         # For creating and manipulating .docx files
-python-docx-template # For using .docx templates (if you use this library)
-# mammoth            # Alternative for .docx to HTML (if needed for preview)
-pdfplumber          # For extracting text and tables from PDFs
-# PyMuPDF            # Alternative for PDF processing (often faster, more features)
-
-# Image Processing (for OCR preprocessing, etc.)
-# opencv-python-headless # For OpenCV image manipulation (headless is smaller)
-# Pillow                 # Python Imaging Library
-
-# AI / ML Model Interaction & Core Libraries
-transformers[sentencepiece,torch] # Hugging Face Transformers core, sentencepiece for tokenizers, torch for PyTorch models
-# accelerate # For efficient model loading/running on different hardware
-# bitsandbytes # For 8-bit quantization (if running larger models)
-# optimum[onnxruntime] # For ONNX model optimization and running (if you go this route)
-
-# Natural Language Processing (might be pulled in by transformers, but good to be aware)
-# nltk
-# spacy
-
-# API Interaction (if you call external services)
-# requests
-# httpx[http2] # Modern async HTTP client
-
-# LangChain (if you use it for complex chains, summarization of long docs, etc.)
-# langchain
-# langchain-community
-# langchain-openai # If using OpenAI models via LangChain
-
-# Optional: For PDF generation from scratch (if not converting from DOCX)
-# reportlab
-
-# Optional: Database interaction (if not using Firebase solely)
-# psycopg2-binary # For PostgreSQL
-# pymongo         # For MongoDB
-
-# For environment variable management in Python (good practice)
-# python-dotenv
+uvicorn
+python-multipart
