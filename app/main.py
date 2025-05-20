@@ -24,3 +24,10 @@ app.add_middleware(
 
 # Include the document formatting route
 app.include_router(formatting.router)
+from fastapi import FastAPI
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"message": "DocuMorph AI backend is working!"}
