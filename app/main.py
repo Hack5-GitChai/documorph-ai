@@ -1,43 +1,64 @@
-from fastapi import FastAPI
+# app/main.py
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import formatting
+
+# Assuming your route files will be named upload_v1.py and format_v1.py
+# If you named them differently (e.g., upload.py), adjust the import.
+from .routes import upload_v1, format_v1 
 
 app = FastAPI(
-    title="DocuMorph AI Backend",
-    description="FastAPI backend for document formatting",
-    version="1.0"
+    title="DocuMorph AI API",
+    description="API for document formatting, summarization, and intelligence.",
+    version="0.1.0",
+    # You can customize docs URLs if you move them under the /api/v1 prefix
+    # docs_url="/api/v1/docs", 
+    # redoc_url="/api/v1/redoc",
+    # openapi_url="/api/v1/openapi.json" 
 )
 
-# CORS settings — allow frontend to talk to backend
+# CORS (Cross-Origin Resource Sharing) settings
+# This allows your frontend (on a different URL) to make requests to this backend.
 origins = [
-    "http://localhost:3000",  # Vite dev server
-    "https://documorph-ai.vercel.app",  # Deployed frontend
+    "http://localhost:5173",  # Default Vite dev server port for frontend
+    "http://localhost:3000",  # Common alternative React dev server port
+    # IMPORTANT: Add your deployed Vercel frontend URL here LATER
+    # e.g., "https://your-project-name.vercel.app" 
 ]
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_credentials=True, # Allows cookies to be included in requests
+    allow_methods=["*"],    # Allows all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],    # Allows all headers
 )
 
-# Include the document formatting route
-app.include_router(formatting.router)
-from fastapi import FastAPI
+# API Router for versioning (good practice)
+# All routes included in this router will be prefixed with /api/v1
+api_v1_router = APIRouter(prefix="/api/v1")
 
-app = FastAPI()
+# Include your feature-specific routers into the versioned API router
+api_v1_router.include_router(upload_v1.router, tags=["File Upload"])
+api_v1_router.include_router(format_v1.router, tags=["Document Formatting"])
+# As you build more features (e.g., summarization), you'll import their routers
+# and include them here.
 
-@app.get("/")
-def read_root():
-    return {"message": "DocuMorph AI backend is working!"}
+# Mount the versioned API router onto the main application
+app.include_router(api_v1_router)
 
-from fastapi.middleware.cors import CORSMiddleware
+# A simple root endpoint to check if the server is running
+@app.get("/", tags=["Root"])
+async def read_root():
+    """
+    Root GET endpoint.
+    Confirms that the API is up and running.
+    """
+    return {"message": "Welcome to DocuMorph AI! API is live. Visit /docs for interactive API documentation."}
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # In production, replace "*" with your frontend URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# The following is for running with `python app/main.py` (less common for dev with FastAPI)
+# For development, it's generally better to use:
+# uvicorn app.main:app --reload --host 0.0.0.0 --port 8000 
+# (run this command from the root 'documorph-ai' directory)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
