@@ -1,83 +1,95 @@
 # app/services/doc_formatter_v1.py
 
 from pathlib import Path  # For object-oriented path manipulation
-from docx import Document # The main class from python-docx to create/manipulate Word documents
-from fastapi import HTTPException # To raise HTTP errors if something goes wrong
+from docx import Document # From the python-docx library to create .docx files
+# Removed HTTPException as services shouldn't typically raise HTTP specific exceptions directly
+# They should raise custom exceptions or standard Python exceptions that routes can handle.
 
-# This function will be called by our formatting route.
-# It simulates taking an input file, applying some "formatting", and saving a new .docx file.
-async def apply_dummy_formatting(input_file_path_str: str, output_file_path_str: str) -> str:
+async def apply_dummy_formatting(
+    input_file_path_str: str, 
+    output_file_path_str: str
+    # template_path_str: str, # We'll add this back when we use real templates
+) -> str:
     """
-    Creates a dummy DOCX document based on an input file.
+    Simulates formatting a document (reads from input, writes a dummy DOCX to output).
+    For this dummy version, it assumes the input is a text file.
 
     Args:
-        input_file_path_str (str): The string path to the input file (e.g., an uploaded .txt file).
-        output_file_path_str (str): The string path where the formatted .docx file should be saved.
+        input_file_path_str (str): The absolute or relative path to the input file.
+        output_file_path_str (str): The absolute or relative path where the output .docx should be saved.
+        # template_path_str (str): Path to the .docx template file (will be used later).
 
     Returns:
-        str: The string path to the created output .docx file.
+        str: The path to the created output .docx file.
 
     Raises:
-        HTTPException: If there's an error during file operations or DOCX creation.
+        FileNotFoundError: If the input file does not exist.
+        IOError: If there's an issue reading the input or writing the output file.
+        Exception: For other general errors during DOCX creation.
     """
-    # Convert string paths to Path objects for easier and safer manipulation
     input_path = Path(input_file_path_str)
     output_path = Path(output_file_path_str)
 
-    # Ensure the directory for the output file exists.
-    # output_path.parent gets the directory part of the path.
-    # mkdir(parents=True, exist_ok=True) creates the directory and any necessary parent
-    # directories, and doesn't raise an error if it already exists.
-    try:
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-    except OSError as e:
-        # If directory creation fails (e.g., permission issues)
-        print(f"Error creating output directory {output_path.parent}: {e}")
-        raise HTTPException(status_code=500, detail=f"Could not create output directory: {str(e)}")
+    print(f"SERVICE: Attempting dummy formatting for input: '{input_path}'")
+    print(f"SERVICE: Output will be saved to: '{output_path}'")
+    # print(f"SERVICE: Template to be used (later): '{template_path_str}'")
 
-    file_content = "Default: No content read from input file or input file did not exist."
-    original_filename = input_path.name # Get the name of the input file
 
-    # Try to read content from the input file (assuming it's a text file for this dummy version)
-    if input_path.exists() and input_path.is_file():
-        try:
-            # Open with utf-8 encoding. 'errors="ignore"' will skip characters that can't be decoded.
-            # For production, you might want more robust encoding detection or error handling.
-            with open(input_path, "r", encoding="utf-8", errors="ignore") as f:
-                file_content = f.read()
-        except Exception as e:
-            # If reading fails, use a default message and log the error.
-            print(f"Warning: Could not read input file {input_path}: {str(e)}")
-            file_content = f"Error: Could not read content from {original_filename}."
-    else:
-        print(f"Warning: Input file {input_path} not found for dummy formatting.")
-        # Keep the default file_content message
+    # Ensure the output directory exists before trying to save the file
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
-        # Create a new Word document instance using python-docx
-        doc = Document()
+        # Step 1: Read content from the input file (assuming it's text for this dummy version)
+        file_content = "Default placeholder content if input file is not read."
+        if not input_path.is_file():
+            # Instead of HTTPException, raise a standard Python error that the route can catch
+            # Or, you could design the function to return None or an error status.
+            # For now, we'll proceed but log a warning if it's part of the dummy logic.
+            print(f"SERVICE WARNING: Input file '{input_path}' not found. Using placeholder content.")
+            # If this were critical, you'd raise FileNotFoundError(f"Input file not found: {input_path}")
+        else:
+            try:
+                with open(input_path, "r", encoding="utf-8", errors="ignore") as f:
+                    file_content = f.read()
+                print(f"SERVICE: Successfully read content from '{input_path}'.")
+            except Exception as e_read:
+                print(f"SERVICE ERROR: Could not read input file '{input_path}': {e_read}")
+                # Depending on requirements, you might want to raise an error here.
+                # For the dummy, we'll continue with the placeholder.
+                # raise IOError(f"Could not read input file '{input_path}': {e_read}") from e_read
 
-        # Add a title to the document
+
+        # Step 2: Create a new DOCX document using python-docx
+        doc = Document() # Creates a new blank document
+
+        # Add some content to the DOCX
         doc.add_heading('Dummy Formatted Document', level=1)
         
-        # Add some paragraphs with information and content
-        doc.add_paragraph(f'This is a dummy formatted DOCX generated from the file: {original_filename}')
-        doc.add_paragraph('A real implementation would apply specific templates and styles.')
-        doc.add_paragraph('--- Original Content Snippet Below ---')
+        p1 = doc.add_paragraph()
+        p1.add_run('This document was "formatted" by DocuMorph AI.').bold = True
         
-        # Add a snippet of the original content (e.g., first 500 characters)
-        # This helps verify that the input file was somewhat processed.
+        doc.add_paragraph(f'Original file processed: {input_path.name}')
+        
+        # Add a snippet of the original content
+        doc.add_heading('Original Content Snippet:', level=2)
         snippet = file_content[:500] + ("..." if len(file_content) > 500 else "")
-        doc.add_paragraph(snippet)
-
-        # Save the newly created DOCX document to the specified output path
+        doc.add_paragraph(snippet if snippet else "No content to display from original file.")
+        
+        # Step 3: Save the DOCX document
         doc.save(output_path)
         
-        print(f"Dummy DOCX '{output_path.name}' created successfully at '{output_path}'.")
-        # Return the string representation of the output path
-        return str(output_path)
+        print(f"SERVICE: Dummy DOCX '{output_path.name}' created successfully at '{output_path}'.")
+        return str(output_path) # Return the path to the created file
 
+    except FileNotFoundError as e: # Catch specific errors if you raise them
+        print(f"SERVICE ERROR: File operation failed: {e}")
+        raise # Re-raise to be handled by the route
+    except IOError as e: # For read/write issues
+        print(f"SERVICE ERROR: IO operation failed: {e}")
+        raise # Re-raise
     except Exception as e:
-        # If any error occurs during DOCX creation or saving
-        print(f"Error creating or saving dummy DOCX: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Error during DOCX generation: {str(e)}")
+        # Catch any other exceptions during DOCX creation or file operations
+        print(f"SERVICE ERROR: Unexpected error during dummy formatting for '{input_path}': {str(e)}")
+        # It's often better to raise a custom application-specific exception here
+        # or re-raise the original exception if the route handler is equipped to deal with it.
+        raise Exception(f"Dummy formatting failed: {str(e)}") from e
