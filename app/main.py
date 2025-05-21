@@ -21,6 +21,7 @@ app = FastAPI(
 origins = [
     "http://localhost:5173",  # Default Vite dev server port for frontend
     "http://localhost:3000",  # Common alternative React dev server port
+    "https://documorph-ai.vercel.app", # Vercel deployment URL (example)
     # IMPORTANT: Add your deployed Vercel frontend URL here LATER
     # e.g., "https://your-project-name.vercel.app" 
 ]
@@ -28,9 +29,9 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_credentials=True, # Allows cookies to be included in requests
-    allow_methods=["*"],    # Allows all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],    # Allows all headers
+    allow_credentials=True, 
+    allow_methods=["*"],    
+    allow_headers=["*"],    
 )
 
 # API Router for versioning (good practice)
