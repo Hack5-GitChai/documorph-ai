@@ -1,14 +1,13 @@
 // frontend/src/components/Upload/UploadBox.jsx
 import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion'; // Import motion
-import { uploadDocument, formatDocumentAndGetBlob } from '../../api'; // Corrected path for api
+import { motion } from 'framer-motion';
+import { uploadDocument, formatDocumentAndGetBlob } from '../../api';
+// Import icons from lucide-react
+import { UploadCloud, FileText, CheckCircle, XCircle, Download, LoaderCircle } from 'lucide-react'; 
 
-// Simple spinner component for loading indication
-const Spinner = () => (
-  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-  </svg>
+// Updated Spinner component to use lucide-react's LoaderCircle
+const Spinner = ({ className = "h-5 w-5 text-white" }) => ( // Added className prop
+  <LoaderCircle className={`animate-spin ${className}`} />
 );
 
 const UploadBox = () => {
@@ -16,7 +15,7 @@ const UploadBox = () => {
   const [uploadedFilename, setUploadedFilename] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isFormatting, setIsFormatting] = useState(false); // Separate loading state for formatting
+  const [isFormatting, setIsFormatting] = useState(false);
   const [formattedDocUrl, setFormattedDocUrl] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -28,7 +27,7 @@ const UploadBox = () => {
       setFormattedDocUrl(null); 
       setMessage(`Selected: ${file.name}`);
     } else {
-      setSelectedFile(null); // Clear selection if no file is chosen
+      setSelectedFile(null);
       setMessage('');
     }
   };
@@ -47,10 +46,10 @@ const UploadBox = () => {
     setFormattedDocUrl(null);
     try {
       const response = await uploadDocument(selectedFile);
-      setMessage(`✅ Upload successful: ${response.filename}. Ready to format.`);
+      setMessage(`File uploaded: ${response.filename}. Ready to format.`);
       setUploadedFilename(response.filename); 
     } catch (error) {
-      setMessage(`❌ Upload failed: ${error.message}`);
+      setMessage(`${error.message}`);
       setUploadedFilename('');
     } finally {
       setIsLoading(false);
@@ -62,26 +61,38 @@ const UploadBox = () => {
       setMessage('Please upload a file first before formatting.');
       return;
     }
-    setIsFormatting(true); // Use separate loading state
+    setIsFormatting(true);
     setMessage(`Formatting ${uploadedFilename}...`);
     setFormattedDocUrl(null);
     try {
       const blob = await formatDocumentAndGetBlob(uploadedFilename);
       const url = URL.createObjectURL(blob);
       setFormattedDocUrl(url); 
-      setMessage(`✅ Formatting successful for ${uploadedFilename}!`);
+      setMessage(`Formatting successful for ${uploadedFilename}!`);
     } catch (error) {
-      setMessage(`❌ Formatting failed: ${error.message}`);
+      setMessage(`${error.message}`);
     } finally {
       setIsFormatting(false);
     }
   };
 
+  // Determine message icon and color
+  let messageIcon = null;
+  let messageColor = 'text-slate-600'; // Default message color
+  if (message.includes('successful') || message.includes('Uploaded:') || message.includes('Selected:')) {
+    messageIcon = <CheckCircle className="inline mr-2 h-5 w-5 text-green-500" />;
+    messageColor = 'text-green-600';
+  } else if (message.includes('failed') || message.includes('Please select')) {
+    messageIcon = <XCircle className="inline mr-2 h-5 w-5 text-red-500" />;
+    messageColor = 'text-red-600';
+  }
+
+
   return (
     <motion.div 
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.1 }} // Adjust delay if needed based on Hero animation
+      transition={{ duration: 0.5, delay: 0.1 }}
       className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl max-w-lg mx-auto"
     >
       <h3 className="text-2xl font-semibold text-brand-dark mb-6 text-center">
@@ -94,7 +105,7 @@ const UploadBox = () => {
         disabled={isLoading || isFormatting} 
         ref={fileInputRef}
         className="hidden" 
-        accept=".txt,.pdf,.doc,.docx,image/*"
+        accept=".txt,.pdf,.doc,.docx,image/*" // Consider refining accepted types
       />
 
       {!selectedFile && !uploadedFilename && (
@@ -105,13 +116,15 @@ const UploadBox = () => {
           whileTap={{ scale: 0.97 }}
           className="w-full bg-brand-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center justify-center mb-4 shadow-md"
         >
-          {isLoading ? <Spinner /> : 'Choose File'}
+          {isLoading ? <Spinner /> : <><UploadCloud className="mr-2 h-5 w-5" /> Choose File</>}
         </motion.button>
       )}
 
       {selectedFile && !uploadedFilename && (
         <div className="text-center mb-4">
-          <p className="text-slate-600 mb-3">Selected: <span className="font-medium text-brand-dark">{selectedFile.name}</span></p>
+          <p className="text-slate-600 mb-3 flex items-center justify-center">
+            <FileText className="mr-2 h-5 w-5 text-slate-500" /> Selected: <span className="font-medium text-brand-dark ml-1">{selectedFile.name}</span>
+          </p>
           <motion.button
             onClick={handleUpload}
             disabled={isLoading || isFormatting}
@@ -119,14 +132,16 @@ const UploadBox = () => {
             whileTap={{ scale: 0.97 }}
             className="w-full bg-brand-secondary text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors duration-150 ease-in-out flex items-center justify-center shadow-md"
           >
-            {isLoading ? <><Spinner /> Uploading...</> : '1. Upload Selected File'}
+            {isLoading ? <><Spinner /> Uploading...</> : <><UploadCloud className="mr-2 h-5 w-5" /> 1. Upload File</>}
           </motion.button>
         </div>
       )}
       
       {uploadedFilename && (
          <div className="text-center mb-4">
-          <p className="text-slate-600 mb-3">Uploaded: <span className="font-medium text-brand-dark">{uploadedFilename}</span></p>
+          <p className="text-slate-600 mb-3 flex items-center justify-center">
+            <CheckCircle className="mr-2 h-5 w-5 text-green-500" /> Uploaded: <span className="font-medium text-brand-dark ml-1">{uploadedFilename}</span>
+          </p>
           <motion.button
             onClick={handleFormat}
             disabled={isLoading || isFormatting}
@@ -134,18 +149,18 @@ const UploadBox = () => {
             whileTap={{ scale: 0.97 }}
             className="w-full bg-brand-accent text-brand-dark font-semibold py-3 px-4 rounded-lg hover:bg-amber-500 transition-colors duration-150 ease-in-out flex items-center justify-center shadow-md"
           >
-            {isFormatting ? <><Spinner /> Formatting...</> : `2. Format "${uploadedFilename}"`}
+            {isFormatting ? <><Spinner className="h-5 w-5 text-brand-dark"/> Formatting...</> : `2. Format "${uploadedFilename.substring(0,20)}${uploadedFilename.length > 20 ? '...' : ''}"`}
           </motion.button>
         </div>
       )}
       
-      {message && (
+      {message && !(message.includes('Selected:') || message.includes('Uploaded:')) && ( // Show general messages, not selection/uploaded status
         <motion.p 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className={`mt-4 text-center text-sm font-medium ${message.includes('failed') || message.includes('❌') ? 'text-red-600' : 'text-green-600'}`}
+          className={`mt-4 text-center text-sm font-medium flex items-center justify-center ${messageColor}`}
         >
-          {message}
+          {messageIcon} {message.replace(/✅|❌/g, '').trim()} {/* Remove emoji if icon is present */}
         </motion.p>
       )}
 
@@ -158,9 +173,9 @@ const UploadBox = () => {
           <a 
             href={formattedDocUrl} 
             download={`${uploadedFilename.split('.')[0]}_formatted.docx`}
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-150 ease-in-out"
+            className="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-150 ease-in-out"
           >
-            Download Formatted Document
+            <Download className="mr-2 h-5 w-5" /> Download Formatted Document
           </a>
         </motion.div>
       )}

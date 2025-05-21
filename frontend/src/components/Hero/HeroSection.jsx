@@ -1,7 +1,11 @@
+
 // frontend/src/components/Hero/HeroSection.jsx
 import React from 'react';
-import { motion } from 'framer-motion'; // Import motion
+import { motion } from 'framer-motion';
+// Import a placeholder icon or image if you have one, or we'll just use text
+import { FileSliders } from 'lucide-react'; // Example: Using a Lucide icon as a placeholder
 
+// ... (scrollToUpload and variants remain the same) ...
 const HeroSection = () => {
   const scrollToUpload = () => {
     const uploadSection = document.getElementById('upload-section');
@@ -10,24 +14,21 @@ const HeroSection = () => {
     }
   };
 
-  // Animation variants for Framer Motion
-  const containerVariants = {
+  const containerVariants = { /* ... as before ... */ 
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2, // Stagger the animation of children
-        delayChildren: 0.1, // Small delay before children start animating
+        staggerChildren: 0.2, 
+        delayChildren: 0.1, 
       },
     },
   };
-
-  const itemVariants = {
+  const itemVariants = { /* ... as before ... */ 
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
   };
-  
-  const buttonVariants = {
+  const buttonVariants = { /* ... as before ... */ 
     hidden: { opacity: 0, scale: 0.8 },
     visible: { opacity: 1, scale: 1, transition: { duration: 0.5, type: "spring", stiffness: 120 } },
   };
@@ -55,21 +56,8 @@ const HeroSection = () => {
           your complex documents, saving you hours of manual work.
         </motion.p>
 
-        {/* For the button, we'll let it be a child of the container for staggering,
-            but apply its own specific variant for scale and springiness */}
         <motion.div variants={itemVariants}> 
           <motion.button
-            // Use buttonVariants for its own unique animation style if needed,
-            // or just itemVariants if simple y-translate and opacity is fine.
-            // Let's use buttonVariants for more distinct button animation.
-            // We apply initial/animate here so it's not double-animated by parent if variants are too different.
-            // However, if buttonVariants also uses opacity/y, the stagger from parent will still apply.
-            // For simplicity now, let's assume its variant is compatible with parent's stagger.
-            // If not, we'd remove variants from the parent that controls this button.
-            // A simpler way: just use itemVariants for the wrapper div and specific whileHover/Tap for button.
-
-            // Let's stick to simpler for now, making it part of the itemVariants flow
-            // and then add its own hover/tap.
             onClick={scrollToUpload}
             whileHover={{ scale: 1.05, transition: { duration: 0.2 } }} 
             whileTap={{ scale: 0.95 }}
@@ -79,10 +67,15 @@ const HeroSection = () => {
           </motion.button>
         </motion.div>
 
+        {/* Updated Visual Placeholder Area */}
         <motion.div variants={itemVariants} className="mt-12 md:mt-16">
-          <div className="bg-white/10 backdrop-blur-sm p-8 rounded-lg max-w-2xl mx-auto min-h-[200px] flex items-center justify-center border border-white/20">
+          <div className="bg-white/10 backdrop-blur-sm p-8 sm:p-12 rounded-lg max-w-xl lg:max-w-2xl mx-auto min-h-[250px] flex flex-col items-center justify-center border border-white/20">
+            <FileSliders size={64} className="text-indigo-200 mb-4" strokeWidth={1.5} />
             <p className="text-indigo-100 text-lg italic">
-              Future Illustration or Lottie Animation will appear here.
+              Smart Document Transformation
+            </p>
+            <p className="text-indigo-200 text-sm mt-1">
+              (Lottie animation or engaging graphic coming soon!)
             </p>
           </div>
         </motion.div>
@@ -90,5 +83,4 @@ const HeroSection = () => {
     </motion.section>
   );
 };
-
 export default HeroSection;
