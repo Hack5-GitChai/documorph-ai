@@ -1,6 +1,6 @@
 // frontend/src/pages/Home.jsx
 import React from 'react';
-import Layout from '../components/Layout'; // Import the Layout
+import Layout from '../components/layout/Layout.jsx'; // Corrected path// Import the Layout
 import UploadBox from '../components/UploadBox'; // Import the UploadBox
 
 const HomePage = () => {
