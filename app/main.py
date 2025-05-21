@@ -23,6 +23,7 @@ origins = [
     "http://localhost:3000",  # Common alternative React dev server port
     "https://documorph-ai.vercel.app", # Vercel deployment URL (example)
     # IMPORTANT: Add your deployed Vercel frontend URL here LATER
+    "https://documorph-jclb75szd-jagadeeshs-projects-8f0326c8.vercel.app",
     # e.g., "https://your-project-name.vercel.app" 
 ]
 
