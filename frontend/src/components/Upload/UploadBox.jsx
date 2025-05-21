@@ -1,6 +1,6 @@
 // frontend/src/components/UploadBox.jsx
 import React, { useState } from 'react';
-import { uploadDocument, formatDocumentAndGetBlob } from '../api'; // Import from our API service
+import { uploadDocument, formatDocumentAndGetBlob } from '../../api'; // Import from our API service
 
 const UploadBox = () => {
   const [selectedFile, setSelectedFile] = useState(null);
