@@ -1,26 +1,9 @@
-# Frontend dependencies and build output
-frontend/node_modules/
-frontend/dist/
+node_modules
+dist
+dist-ssr # If doing SSR
+*.local
 
-# Python virtual environment (if you created one in the root)
-# /venv/  <- Add a leading slash if venv is always in the root
-# Or just venv/ if it could be anywhere
-
-# Python bytecode and caches
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-
-# IDE / Editor specific files
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS specific files
-.DS_Store
-Thumbs.db
-
+# Environment variables (already in root, but good to have here too for explicitness if running commands inside frontend/)
 .env
 .env.*
+!.env.example 

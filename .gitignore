@@ -1,2 +1,31 @@
-.env
-.env.*
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+venv/
+app/.DS_Store # Example for specific OS files in subdirs
+data/.DS_Store
+
+# Frontend specific
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.env
+frontend/.env.*
+!frontend/.env.example # If you add an example env file
+
+# IDE / Editor specific files
+.vscode/
+# .idea/ # Uncomment if you use JetBrains IDEs
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+lerna-debug.log*
