@@ -1,6 +1,7 @@
+// frontend/postcss.config.js
 export default {
   plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
+    tailwindcss: {}, // Tailwind CSS itself
+    autoprefixer: {}, // Autoprefixer for browser compatibility
   },
 }
