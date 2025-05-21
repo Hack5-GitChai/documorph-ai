@@ -7,25 +7,15 @@
 
 @layer base {
   html {
-    font-family: theme('fontFamily.sans'); /* Use the sans-serif stack defined in tailwind.config.js */
-    scroll-behavior: smooth; /* For smooth scrolling on page jumps */
+    font-family: theme('fontFamily.sans'); 
+    scroll-behavior: smooth; 
   }
   body {
-    @apply bg-brand-light text-brand-dark; /* Using our custom colors */
+    @apply bg-brand-light text-brand-dark; 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  /* Add any other global base styles or element resets here */
-  /* For example, more consistent heading styles */
   h1, h2, h3, h4, h5, h6 {
     @apply font-semibold;
   }
 }
-
-/* You can define custom component styles here if absolutely necessary, 
-   but try to use utility classes as much as possible. */
-/* @layer components {
-  .custom-button {
-    @apply py-2 px-4 bg-brand-primary text-white rounded hover:bg-blue-700;
-  }
-} */
