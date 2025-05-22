@@ -1,10 +1,8 @@
 // frontend/src/components/common/GlobalLoader.jsx
 import React from 'react';
 import Lottie from 'lottie-react';
-// Choose one of your infinity loading animations
+// Make sure this is an animation that is designed to loop well.
 import infinityLoadingAnimationData from '../../assets/animations/infinity-loading.json'; 
-// Or use processingAnimationData if you prefer
-// import infinityLoadingAnimationData from '../../assets/animations/processing.json'; 
 
 const GlobalLoader = ({ isLoading }) => {
   if (!isLoading) return null;
@@ -17,16 +15,20 @@ const GlobalLoader = ({ isLoading }) => {
         left: 0, 
         width: '100vw', 
         height: '100vh',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white overlay
-        backdropFilter: 'blur(4px)', // Blur effect
+        backgroundColor: 'rgba(243, 244, 246, 0.9)', // Using brand-light with opacity
+        backdropFilter: 'blur(5px)', 
         display: 'flex', 
         justifyContent: 'center', 
         alignItems: 'center', 
-        zIndex: 9999, // Ensure it's on top
+        zIndex: 9999,
       }}
     >
       <div style={{ width: '150px', height: '150px' }}> {/* Adjust size */}
-        <Lottie animationData={infinityLoadingAnimationData} loop={true} autoplay={true} />
+        <Lottie 
+          animationData={infinityLoadingAnimationData} 
+          loop={true} // <<<< ENSURE THIS IS TRUE
+          autoplay={true} 
+        />
       </div>
     </div>
   );

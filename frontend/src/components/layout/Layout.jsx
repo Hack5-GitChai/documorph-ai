@@ -1,29 +1,15 @@
-// frontend/src/components/Layout.jsx
+// frontend/src/components/layout/Layout.jsx
 import React from 'react';
-
-// Basic Navbar component (can be moved to its own file later)
-const Navbar = () => {
-  return (
-    <nav style={{ background: '#333', color: 'white', padding: '1rem', textAlign: 'center' }}>
-      <h1>DocuMorph AI</h1>
-    </nav>
-  );
-};
-
-// Basic Footer component (can be moved to its own file later)
-const Footer = () => {
-  return (
-    <footer style={{ background: '#333', color: 'white', padding: '1rem', textAlign: 'center', marginTop: 'auto' }}>
-      <p>© {new Date().getFullYear()} DocuMorph AI. All rights reserved.</p>
-    </footer>
-  );
-};
+import Navbar from './Navbar';
+import Footer from './Footer'; // We'll enhance Footer next
 
 const Layout = ({ children }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <div className="flex flex-col min-h-screen bg-brand-light text-brand-dark selection:bg-brand-accent selection:text-white">
+      {/* selection: classes change text selection color - nice touch */}
       <Navbar />
-      <main style={{ flex: 1, padding: '1rem 2rem' }}> {/* Added some padding */}
+      <main className="flex-grow w-full container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Added w-full to main to ensure it tries to take full width before container centers it */}
         {children}
       </main>
       <Footer />
