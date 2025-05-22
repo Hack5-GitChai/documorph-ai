@@ -1,11 +1,10 @@
-
 // frontend/src/components/Hero/HeroSection.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-// Import a placeholder icon or image if you have one, or we'll just use text
-import { FileSliders } from 'lucide-react'; // Example: Using a Lucide icon as a placeholder
+import Lottie from 'lottie-react'; // Import Lottie component
+// Import your Lottie JSON animation file for the hero
+import heroScanAnimationData from '../../assets/animations/hero-doc-scan.json'; // Using this one!
 
-// ... (scrollToUpload and variants remain the same) ...
 const HeroSection = () => {
   const scrollToUpload = () => {
     const uploadSection = document.getElementById('upload-section');
@@ -14,7 +13,7 @@ const HeroSection = () => {
     }
   };
 
-  const containerVariants = { /* ... as before ... */ 
+  const containerVariants = { 
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -24,13 +23,9 @@ const HeroSection = () => {
       },
     },
   };
-  const itemVariants = { /* ... as before ... */ 
+  const itemVariants = { 
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } },
-  };
-  const buttonVariants = { /* ... as before ... */ 
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.5, type: "spring", stiffness: 120 } },
   };
 
   return (
@@ -67,20 +62,21 @@ const HeroSection = () => {
           </motion.button>
         </motion.div>
 
-        {/* Updated Visual Placeholder Area */}
-        <motion.div variants={itemVariants} className="mt-12 md:mt-16">
-          <div className="bg-white/10 backdrop-blur-sm p-8 sm:p-12 rounded-lg max-w-xl lg:max-w-2xl mx-auto min-h-[250px] flex flex-col items-center justify-center border border-white/20">
-            <FileSliders size={64} className="text-indigo-200 mb-4" strokeWidth={1.5} />
-            <p className="text-indigo-100 text-lg italic">
-              Smart Document Transformation
-            </p>
-            <p className="text-indigo-200 text-sm mt-1">
-              (Lottie animation or engaging graphic coming soon!)
-            </p>
-          </div>
+        {/* Lottie Animation Area - Using hero-doc-scan.json */}
+        <motion.div 
+          variants={itemVariants} 
+          className="mt-12 md:mt-16 max-w-xs sm:max-w-sm md:max-w-md mx-auto" // Control size of Lottie container
+        >
+          <Lottie 
+            animationData={heroScanAnimationData} 
+            loop={true} 
+            autoplay={true} 
+            className="w-full h-auto" // Ensure it scales within its container
+          />
         </motion.div>
       </div>
     </motion.section>
   );
 };
+
 export default HeroSection;
