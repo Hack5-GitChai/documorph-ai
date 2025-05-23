@@ -1,21 +1,18 @@
 // frontend/src/components/Upload/DocumentProcessorBox.jsx
-// (Consider renaming the file and component if it makes more sense for your project structure,
-// e.g., if this will be the main interaction point for all document processing)
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react'; // Removed useEffect for this test
 import { motion, AnimatePresence } from 'framer-motion';
 import Lottie from 'lottie-react';
-// Ensure this import path is correct and points to your updated api/index.js
+// Keep this import, but we might not even call the function in this test
 import { processDocumentViaN8n } from '../../api'; 
-import { UploadCloud, CheckCircle, XCircle, RefreshCw, FileText } from 'lucide-react'; // Added FileText
+import { UploadCloud, CheckCircle, XCircle, RefreshCw, FileText } from 'lucide-react';
 
-// Import Lottie animations (ensure paths are correct)
 import processingAnimationData from '../../assets/animations/processing.json';
 import successAnimationData from '../../assets/animations/task-success.json';
 import errorAnimationData from '../../assets/animations/error-404.json';
 
-// General Lottie Player for different states
 const StateAnimation = ({ animationData, message, loop = true }) => (
+  // ... (StateAnimation component remains the same) ...
   <motion.div
     initial={{ opacity: 0, scale: 0.8 }}
     animate={{ opacity: 1, scale: 1 }}
@@ -30,21 +27,14 @@ const StateAnimation = ({ animationData, message, loop = true }) => (
   </motion.div>
 );
 
-
 const DocumentProcessorBox = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  
-  // UI State: 'idle', 'selecting', 'processing', 'success', 'error'
   const [uiState, setUiState] = useState('idle'); 
   const [feedbackMessage, setFeedbackMessage] = useState('');
-  const [processingResult, setProcessingResult] = useState(null); // To store the JSON from n8n
-  
+  const [processingResult, setProcessingResult] = useState(null);
   const fileInputRef = useRef(null);
 
-  // No need for formattedDocUrl or uploadedFilename specifically for this n8n flow initially,
-  // unless n8n returns a direct download URL later for generated files.
-
-  const resetState = () => {
+  const resetState = () => { /* ... (resetState remains the same) ... */ 
     setSelectedFile(null);
     setUiState('idle');
     setFeedbackMessage('');
@@ -52,13 +42,12 @@ const DocumentProcessorBox = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
-  const handleFileChange = (event) => {
+  const handleFileChange = (event) => { /* ... (handleFileChange remains the same) ... */ 
     const file = event.target.files[0];
     if (file) {
-      // Basic validation for image types for OCR, can be expanded
       if (!file.type.startsWith('image/')) {
         setFeedbackMessage('Please select an image file for OCR processing.');
-        setUiState('error'); // Or a different state like 'invalid_file'
+        setUiState('error'); 
         setSelectedFile(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
         return;
@@ -71,58 +60,52 @@ const DocumentProcessorBox = () => {
       resetState();
     }
   };
-
+  
   const triggerFileSelect = () => fileInputRef.current?.click();
 
+  // --- MODIFIED FOR DEBUGGING ---
   const handleProcessDocument = async () => {
-    if (!selectedFile) {
-      setFeedbackMessage('Please select a file first.');
-      setUiState('error');
-      return;
-    }
-    setUiState('processing'); // One state for the entire n8n flow
-    setFeedbackMessage(`Processing ${selectedFile.name}...`);
-    setProcessingResult(null);
-
-    alert("DEBUG: handleProcessDocument CALLED! About to call processDocumentViaN8n."); // ADD THIS
-    try {
-      // Call the new API function that triggers the n8n workflow
-      const result = await processDocumentViaN8n(selectedFile); 
-      setProcessingResult(result); // Store the JSON response from n8n
-      setUiState('success');
-      // You can customize the success message based on 'result' if needed
-      setFeedbackMessage(`Processing complete for ${selectedFile.name}!`); 
-    } catch (error) {
-      setFeedbackMessage(error.message || 'Processing failed. Please try again.');
-      setUiState('error');
-    }
+    alert("DEBUG TEST: 'handleProcessDocument' (for N8N flow) was CLICKED!");
+    // For this test, we are NOT calling the API yet.
+    // We just want to see if this specific function is triggered by the button.
+    // If this alert appears, the button is wired correctly to THIS function.
+    // If another alert appears, or no alert, the button is wired elsewhere.
+    console.log("DEBUG TEST: handleProcessDocument CALLED. Selected file:", selectedFile ? selectedFile.name : "None");
+    // setUiState('processing'); // Comment out API call for now
+    // setFeedbackMessage(`TESTING: Click registered for ${selectedFile?.name}...`);
+    // setProcessingResult(null);
+    return; // Stop further execution for this test
   };
 
-  // Determine message icon and color based on uiState (simplified)
-  let messageIcon = null;
-  let messageColorClass = 'text-slate-600'; // Default
-  if (uiState === 'error') {
-    messageIcon = <XCircle className="inline mr-2 h-5 w-5" />;
-    messageColorClass = 'text-red-600';
-  } else if (uiState === 'success' || uiState === 'selecting') { // Grouped success-like states
-    messageIcon = <CheckCircle className="inline mr-2 h-5 w-S5" />;
-    messageColorClass = 'text-green-600';
-  }
+  // --- IF YOU HAVE OLD HANDLERS, ADD ALERTS TO THEM TOO ---
+  const handleOldUploadLogic = async () => { // Example name for an old function
+    alert("DEBUG TEST: 'handleOldUploadLogic' was CLICKED! This is WRONG for n8n flow.");
+    console.log("DEBUG TEST: handleOldUploadLogic CALLED.");
+  };
+  
+  const handleOldFormatLogic = async () => { // Example name for an old function
+    alert("DEBUG TEST: 'handleOldFormatLogic' was CLICKED! This is WRONG for n8n flow.");
+    console.log("DEBUG TEST: handleOldFormatLogic CALLED.");
+  };
 
+
+  // ... (messageIcon, messageColorClass logic remains the same) ...
+  // ... (JSX for motion.div, AnimatePresence remains the same) ...
 
   return (
-    <motion.div 
+     <motion.div 
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: 0.1 }}
-      className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl max-w-lg mx-auto min-h-[400px] flex flex-col" // Increased min-h
+      className="bg-white p-6 sm:p-8 rounded-xl shadow-2xl max-w-lg mx-auto min-h-[400px] flex flex-col"
     >
-      <AnimatePresence mode="wait">
+      {/* ... AnimatePresence and StateAnimation parts ... */}
+       <AnimatePresence mode="wait">
         {uiState === 'processing' && (
           <StateAnimation key="processing" animationData={processingAnimationData} message="Processing your document via n8n..." />
         )}
         {uiState === 'success' && (
-          <motion.div key="success" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="text-center">
+           <motion.div key="success" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} className="text-center">
             <StateAnimation animationData={successAnimationData} message={feedbackMessage} loop={false} />
             {/* Display the n8n JSON result */}
             {processingResult && (
@@ -148,7 +131,7 @@ const DocumentProcessorBox = () => {
         )}
       </AnimatePresence>
 
-      {/* Show initial UI elements only if not in a terminal Lottie state ('processing', 'success', 'error') */}
+
       {(uiState === 'idle' || uiState === 'selecting') && (
         <div className="flex flex-col flex-grow justify-center">
           <h3 className="text-2xl font-semibold text-brand-dark mb-6 text-center">
@@ -159,14 +142,12 @@ const DocumentProcessorBox = () => {
             onChange={handleFileChange} 
             ref={fileInputRef}
             className="hidden" 
-            // Initially focusing on images for OCR. Expand as needed.
             accept="image/png, image/jpeg, image/webp" 
           />
 
-          {(uiState === 'idle' || (uiState === 'selecting' && !selectedFile)) && ( // Show Choose File if idle or no file selected
+          {(uiState === 'idle' || (uiState === 'selecting' && !selectedFile)) && (
             <motion.button
               onClick={triggerFileSelect}
-              whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
               className="w-full bg-brand-primary text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-150 ease-in-out flex items-center justify-center mb-4 shadow-md"
             >
               <UploadCloud className="mr-2 h-5 w-5" /> Choose Image File
@@ -181,9 +162,9 @@ const DocumentProcessorBox = () => {
                   {feedbackMessage}
                 </p>
               </div>
+              {/* ENSURE THIS BUTTON IS THE ONE YOU ARE CLICKING */}
               <motion.button
-                onClick={handleProcessDocument} // Calls the new handler
-                whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}
+                onClick={handleProcessDocument} // THIS IS THE KEY ONCLICK
                 className="w-full bg-brand-secondary text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition-colors duration-150 ease-in-out flex items-center justify-center shadow-md"
               >
                 Process with DocuMorph AI
@@ -191,7 +172,6 @@ const DocumentProcessorBox = () => {
             </div>
           )}
           
-          {/* General feedback message if idle but has a message (e.g., from previous error then reset) */}
           { (uiState === 'idle' && feedbackMessage) &&
             <p className={`mt-4 text-center text-sm font-medium ${messageColorClass}`}>
               {messageIcon} {feedbackMessage}
