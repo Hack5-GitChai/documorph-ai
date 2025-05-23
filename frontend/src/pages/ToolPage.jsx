@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom'; // useNavigate for programmatic navigation
 import Layout from '../components/layout/Layout';
-import UploadBox from '../components/Upload/UploadBox'; // Your main upload component
+import UploadBox from '../components/Upload/DocumentProcessorBox'; // Your main upload component
 import { motion } from 'framer-motion';
 import { 
     FileUp,         // For main upload
