@@ -1,6 +1,5 @@
 fastapi
-uvicorn[standard] # or just uvicorn
+uvicorn[standard]
 python-multipart
 httpx
-# Add python-docx if your format_v1.py still uses it for dummy formatting
-# Add any other non-AI backend specific libraries
+python-docx  # <-- ADD THIS LINE IF IT'S MISSING
