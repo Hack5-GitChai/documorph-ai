@@ -19,6 +19,9 @@ async def process_document_via_orchestrator(
     """
     if not N8N_PROCESS_DOCUMENT_WEBHOOK_URL:
         print("CRITICAL ERROR: N8N_PROCESS_DOCUMENT_WEBHOOK_URL_ENV is not set in the backend environment.")
+    else:
+        print(f"DEBUG FastAPI: n8n Webhook URL configured as: {N8N_PROCESS_DOCUMENT_WEBHOOK_URL}") # ADD THIS LINE    
+        
         raise HTTPException(
             status_code=500, 
             detail="Orchestration service endpoint is not configured on the server."
