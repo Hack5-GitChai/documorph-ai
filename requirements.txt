@@ -1,11 +1,6 @@
 fastapi
-uvicorn[standard]
+uvicorn[standard] # or just uvicorn
 python-multipart
-python-docx
-
-# For Hugging Face TrOCR & general ML
-transformers[sentencepiece] # Includes sentencepiece for tokenizers
-torch --index-url https://download.pytorch.org/whl/cpu # Specify CPU version of PyTorch for broader compatibility in Codespaces
-Pillow # For image manipulation
-# numpy # Often a dependency, pip will handle it
-# easyocr # We are replacing this with TrOCR for now. Remove if you only want TrOCR.
+httpx
+# Add python-docx if your format_v1.py still uses it for dummy formatting
+# Add any other non-AI backend specific libraries
