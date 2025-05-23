@@ -1,93 +1,77 @@
 # app/routes/format_v1.py
 
-from fastapi import APIRouter, Form, HTTPException, Depends
-from fastapi.responses import FileResponse # Used to send a file back to the client
-from pathlib import Path # For object-oriented path manipulation
+from fastapi import APIRouter, Form, HTTPException # Depends not used here
+from fastapi.responses import FileResponse
+from pathlib import Path
 
-# Import the service function that does the actual (dummy) formatting
 from app.services.doc_formatter_v1 import apply_dummy_formatting 
 
 router = APIRouter(
-    prefix="/format" # This prefix will be added to all routes in this router
-                     # So, /document/ becomes /api/v1/format/document/
+    prefix="/format" # Full path will be /api/v1/format
 )
 
-# Define base directories for consistency and security.
-# These paths are relative to the project root where uvicorn is run.
 BASE_UPLOAD_DIR = Path("data/uploads")
 BASE_OUTPUT_DIR = Path("data/sample_outputs")
-# BASE_TEMPLATE_DIR = Path("app/templates") # We'll use this when real templates are implemented
 
-# Ensure these directories exist (idempotent - won't error if they already exist)
 BASE_UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 BASE_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-# BASE_TEMPLATE_DIR.mkdir(parents=True, exist_ok=True)
 
-
-@router.post("/document/", summary="Format an uploaded document and provide it for download")
-async def format_and_download_document(
-    filename: str = Form(...),
-    # template_name: str = Form(...), # Parameter for template selection (to be added later)
+@router.post("/document/", summary="Format an uploaded document (dummy) and provide it for download")
+async def format_and_download_document_route( # Renamed function for clarity vs service
+    filename: str = Form(..., description="The name of the previously uploaded file (e.g., 'my_document.txt'). Must exist in data/uploads/.")
+    # template_name: str = Form(None, description="Future: Name of the template to apply."),
 ):
     """
-    Takes a `filename` (which is assumed to have been previously uploaded
-    via the `/upload/document/` endpoint and resides in `data/uploads/`),
-    applies dummy formatting to it (creating a .docx file),
+    (Old Flow - Dummy Formatting)
+    Takes a `filename` (assumed to be in `data/uploads/`),
+    applies dummy formatting using `python-docx` via a service,
     and returns the formatted .docx file for download.
-
-    - **filename**: The name of the previously uploaded file (e.g., "my_document.txt").
-    - **template_name**: (Future) The name of the template to apply (e.g., "academic_report").
     """
-    # Basic sanitization for filename to prevent path traversal
-    safe_filename = Path(filename).name
-    if not safe_filename:
-        raise HTTPException(status_code=400, detail="Invalid filename provided.")
+    print(f"ROUTE (format_v1): Received request to format filename: '{filename}'")
+
+    # Basic input validation for filename parameter itself
+    if not filename or ".." in filename or "/" in filename or "\\" in filename: # More robust sanitization
+        raise HTTPException(status_code=400, detail="Invalid filename provided. Contains disallowed characters or path elements.")
+    
+    safe_filename = Path(filename).name # Ensures we only use the basename
 
     input_file_path = BASE_UPLOAD_DIR / safe_filename
-    
-    # Determine the output filename. We'll use the original filename's stem
-    # and append "_formatted.docx".
-    output_filename_stem = input_file_path.stem # Gets filename without extension
-    output_file_path = BASE_OUTPUT_DIR / f"{output_filename_stem}_formatted.docx"
+    output_filename_stem = input_file_path.stem 
+    output_file_path = BASE_OUTPUT_DIR / f"{output_filename_stem}_formatted_dummy.docx" # Made output name more specific
 
-    # Check if the input file actually exists in the uploads directory
     if not input_file_path.is_file():
+        print(f"ROUTE ERROR (format_v1): Input file '{input_file_path}' not found for formatting.")
         raise HTTPException(
             status_code=404, 
-            detail=f"Input file '{safe_filename}' not found. Please upload it first."
+            detail=f"Input file '{safe_filename}' not found. Please ensure it was uploaded correctly."
         )
 
     try:
-        # Call the service function to perform the (dummy) formatting.
-        # This function will create the file at output_file_path.
-        # We pass paths as strings as defined in the service function.
-        # The template_path_str is omitted for now.
+        # Call the service
         await apply_dummy_formatting(
             input_file_path_str=str(input_file_path), 
             output_file_path_str=str(output_file_path)
-            # template_path_str=str(BASE_TEMPLATE_DIR / f"{Path(template_name).name}.docx") # For later
         )
 
-        # After the service call, check if the output file was actually created.
         if not output_file_path.is_file():
-            # This would indicate an issue within the apply_dummy_formatting service
-            # if it didn't raise an error but also didn't create the file.
-            raise HTTPException(status_code=500, detail="Formatted file was not created by the service.")
+            print(f"ROUTE ERROR (format_v1): Service did not create output file at '{output_file_path}'.")
+            raise HTTPException(status_code=500, detail="Internal error: Formatted file was not generated.")
 
-        # If the file was created, return it as a downloadable response.
+        print(f"ROUTE (format_v1): Sending formatted file '{output_file_path.name}' for download.")
         return FileResponse(
-            path=output_file_path, # The path to the file on the server
-            filename=output_file_path.name, # The name the client's browser will suggest for saving
-            media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document' # MIME type for .docx
+            path=output_file_path, 
+            filename=output_file_path.name, 
+            media_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         )
-    except FileNotFoundError as e: # Catching specific errors from the service
-        raise HTTPException(status_code=404, detail=str(e))
-    except IOError as e:
-        raise HTTPException(status_code=500, detail=f"File operation error: {str(e)}")
-    except HTTPException as e_http: # Re-raise HTTPExceptions if the service raised one (though ideally it shouldn't)
-        raise e_http
-    except Exception as e:
-        # Catch any other unexpected errors from the service or this route.
-        # Log the error `e` on the server for debugging.
-        # print(f"Unexpected error in format_and_download_document: {e}") # Example logging
-        raise HTTPException(status_code=500, detail=f"An unexpected error occurred during processing: {str(e)}")
+    except FileNotFoundError as e_fnf: # Catching specific errors from the service
+        print(f"ROUTE ERROR (format_v1): FileNotFoundError from service: {e_fnf}")
+        raise HTTPException(status_code=404, detail=str(e_fnf)) # Make sure detail is user-friendly
+    except IOError as e_io:
+        print(f"ROUTE ERROR (format_v1): IOError from service: {e_io}")
+        raise HTTPException(status_code=500, detail=f"File processing error: {str(e_io)}")
+    except Exception as e_service: # Catch more general exceptions from the service
+        # This will catch the "Dummy formatting failed: All strings must be XML compatible..."
+        print(f"ROUTE ERROR (format_v1): Exception from formatting service: {e_service}")
+        # Extract the original specific error message if it's a chained exception
+        original_error_msg = str(e_service.args[0]) if e_service.args else str(e_service)
+        raise HTTPException(status_code=500, detail=f"An unexpected error occurred during processing: {original_error_msg}")
