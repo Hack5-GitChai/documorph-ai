@@ -84,7 +84,7 @@ const ToolPage = () => {
         </section>
 
         <section id="auxiliary-tools">
-          {/* ... rest of your FeatureButton section (seems fine) ... */}
+          {/* ... rest of your FeatureButton section (seems fine) .... */}
           <div className="text-center mb-10 md:mb-12">
             <h2 className="text-2xl sm:text-3xl font-bold text-brand-dark">
               Explore Features & Utilities
