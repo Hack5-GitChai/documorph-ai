@@ -84,6 +84,7 @@ const DocumentProcessorBox = () => {
     setFeedbackMessage(`Processing ${selectedFile.name}...`);
     setProcessingResult(null);
 
+    alert("DEBUG: handleProcessDocument CALLED! About to call processDocumentViaN8n."); // ADD THIS
     try {
       // Call the new API function that triggers the n8n workflow
       const result = await processDocumentViaN8n(selectedFile); 
