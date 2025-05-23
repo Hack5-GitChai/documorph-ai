@@ -1,7 +1,7 @@
 // frontend/src/pages/UploadAndFormatPage.jsx
 import React from 'react';
 import Layout from '../components/layout/Layout';
-import UploadBox from '../components/Upload/UploadBox';
+import UploadBox from '../components/Upload/DocumentProcessorBox';
 import { motion } from 'framer-motion';
 
 const UploadAndFormatPage = () => {
